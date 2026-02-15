@@ -10,7 +10,7 @@ export const useCheckBudgets = () => {
     if (!isLoaded) return; // wait until user is loaded
     if (!user) return; // no user logged in
 
-    console.log("Clerk userId:", user.id); // ✅ now this will show
+    // console.log("Clerk userId:", user.id); // ✅ now this will show
 
     const check = async () => {
       const res = await fetch(`/api/checkBudgets?userId=${user.id}`);

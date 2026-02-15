@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/utlis/dbConfig";
+
 import { budgets } from "@/utlis/schema";
 import { eq } from "drizzle-orm";
+import { db } from "@/utlis/dbConfig";
 
 export async function GET(req: NextRequest) {
   const userId = req.nextUrl.searchParams.get("userId");
