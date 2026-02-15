@@ -34,7 +34,7 @@ export default function BudgetForm({ onSuccess }: BudgetFormProps) {
     });
 
     const data = await res.json();
-    console.log("Inserted Budget:", data);
+    // console.log("Inserted Budget:", data);
 
     if (data.success && formRef.current) {
       formRef.current.reset();
