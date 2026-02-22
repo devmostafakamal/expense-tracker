@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import BudgetForm from "@/components/custom/BudgetForm";
 import { FiPlus } from "react-icons/fi";
+import BudgetCard from "@/components/custom/BudgetCard";
 
 interface Budget {
   id: number;
@@ -10,18 +11,22 @@ interface Budget {
   amount: number;
   month: number;
   year: number;
+  totalSpent: number;
+  remaining: number;
+  percentage: number;
+  status: "safe" | "warning" | "danger";
 }
 
 function Budgets() {
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [showModal, setShowModal] = useState(false);
-  console.log(budgets);
+  // console.log(budgets);
   // fetch budgets from API
   const fetchBudgets = async () => {
     try {
       const res = await fetch("/api/budget"); // GET route
       const data = await res.json();
-      console.log(data);
+      // console.log(data);
 
       if (data.success) {
         setBudgets(data.data || []);
@@ -48,9 +53,25 @@ function Budgets() {
             <FiPlus size={20} />
           </button>
         </div>
+        <div className="grid md:grid-cols-2 gap-4">
+          {budgets.length > 0 ? (
+            budgets.map((b) => (
+              <BudgetCard
+                key={b.id}
+                title={b.title}
+                amount={b.amount}
+                totalSpent={b.totalSpent}
+                remaining={b.remaining}
+                percentage={b.percentage}
+              />
+            ))
+          ) : (
+            <p className="text-gray-500">No budgets yet</p>
+          )}
+        </div>
 
         {/* Budget List */}
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           {budgets.length > 0 ? (
             budgets.map((b) => (
               <div
@@ -64,7 +85,7 @@ function Budgets() {
           ) : (
             <p className="text-gray-500">No budgets yet</p>
           )}
-        </div>
+        </div> */}
       </div>
 
       {/* Modal */}

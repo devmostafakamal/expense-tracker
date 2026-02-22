@@ -1,6 +1,7 @@
 // import { db } from "@/utlis/dbConfig";
 import { db } from "@/utlis/dbConfig";
 import { budgets } from "@/utlis/schema";
+import { sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -41,11 +42,57 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// export async function GET() {
+//   try {
+//     const allBudgets = await db.select().from(budgets);
+
+//     return NextResponse.json({ success: true, data: allBudgets });
+//   } catch (error) {
+//     console.error("Budget Fetch Error:", error);
+//     return NextResponse.json(
+//       { success: false, error: String(error) },
+//       { status: 500 },
+//     );
+//   }
+// }
 export async function GET() {
   try {
-    const allBudgets = await db.select().from(budgets);
+    const result = await db.execute(sql`
+      SELECT 
+        b.id,
+        b.title,
+        b.amount,
+        b.month,
+        b.year,
+        COALESCE(SUM(e.amount), 0) as total_spent
+      FROM budgets b
+      LEFT JOIN expenses e ON b.id = e.budget_id
+      GROUP BY b.id
+      ORDER BY b.created_at DESC
+    `);
 
-    return NextResponse.json({ success: true, data: allBudgets });
+    const formatted = result.rows.map((b: any) => {
+      const totalSpent = Number(b.total_spent);
+      const remaining = b.amount - totalSpent;
+      const percentage = b.amount > 0 ? (totalSpent / b.amount) * 100 : 0;
+
+      let status = "safe";
+      if (percentage >= 100) status = "danger";
+      else if (percentage >= 80) status = "warning";
+
+      return {
+        ...b,
+        totalSpent,
+        remaining,
+        percentage,
+        status,
+      };
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: formatted,
+    });
   } catch (error) {
     console.error("Budget Fetch Error:", error);
     return NextResponse.json(

@@ -17,7 +17,11 @@ type MenuItem = {
   icon: any;
 };
 
-function DashboardSidebar() {
+type DashboardSidebarProps = {
+  onLinkClick?: () => void; // ✅ optional callback for mobile
+};
+
+function DashboardSidebar({ onLinkClick }: DashboardSidebarProps) {
   const pathname = usePathname();
   const menuList: MenuItem[] = [
     { id: 1, name: "Dashboard", path: "/dashboard", icon: MdDashboard },
@@ -37,23 +41,27 @@ function DashboardSidebar() {
   ];
 
   return (
-    <div className="h-screen p-5 border shadow-sm">
+    <div className="h-screen p-5 border shadow-sm bg-white flex flex-col">
+      {/* Logo */}
       <div className="flex items-center gap-2">
         <Image src={"/expense.png"} width={50} height={30} alt="logo" />
         <h2 className="font-semibold text-lg">Expense</h2>
       </div>
 
-      <div className="mt-10">
+      {/* Menu */}
+      <div className="mt-10 flex-1">
         <ul className="space-y-3">
           {menuList.map((menu) => {
             const Icon = menu.icon;
+            const isActive = pathname === menu.path;
 
             return (
               <li key={menu.id}>
                 <Link
                   href={menu.path}
+                  onClick={onLinkClick} // ✅ closes sidebar on mobile
                   className={`flex items-center gap-3 p-2 rounded-md font-medium hover:bg-gray-100 transition ${
-                    pathname === menu.path ? "bg-gray-200" : ""
+                    isActive ? "bg-gray-200" : ""
                   }`}
                 >
                   <Icon className="text-xl" />
@@ -64,10 +72,12 @@ function DashboardSidebar() {
           })}
         </ul>
       </div>
-      {/* <div className="fixed bottom-10 flex p-5 gap-2 items-center">
+
+      {/* Optional profile button at bottom */}
+      <div className="mt-auto flex items-center gap-2">
         <UserButton />
-        Profile
-      </div> */}
+        <span className="hidden sm:inline">Profile</span>
+      </div>
     </div>
   );
 }
