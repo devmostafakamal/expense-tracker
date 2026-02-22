@@ -1,18 +1,24 @@
-// import { db } from "@/utlis/dbConfig";
 import { db } from "@/utlis/dbConfig";
 import { budgets } from "@/utlis/schema";
 import { sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 
 export async function POST(req: NextRequest) {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 },
+      );
+    }
+
     const body = await req.json();
+    const { title, amount, month, year } = body;
 
-    const { userId, title, amount, month, year } = body;
-
-    // strict type check
     if (
-      typeof userId !== "string" ||
       typeof title !== "string" ||
       typeof amount !== "number" ||
       typeof month !== "number" ||
@@ -29,10 +35,7 @@ export async function POST(req: NextRequest) {
       .values({ userId, title, amount, month, year })
       .returning();
 
-    return NextResponse.json({
-      success: true,
-      data: insertedBudget[0],
-    });
+    return NextResponse.json({ success: true, data: insertedBudget[0] });
   } catch (error) {
     console.error("Budget Insert Error:", error);
     return NextResponse.json(
@@ -42,21 +45,17 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// export async function GET() {
-//   try {
-//     const allBudgets = await db.select().from(budgets);
-
-//     return NextResponse.json({ success: true, data: allBudgets });
-//   } catch (error) {
-//     console.error("Budget Fetch Error:", error);
-//     return NextResponse.json(
-//       { success: false, error: String(error) },
-//       { status: 500 },
-//     );
-//   }
-// }
 export async function GET() {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 },
+      );
+    }
+
     const result = await db.execute(sql`
       SELECT 
         b.id,
@@ -67,6 +66,7 @@ export async function GET() {
         COALESCE(SUM(e.amount), 0) as total_spent
       FROM budgets b
       LEFT JOIN expenses e ON b.id = e.budget_id
+      WHERE b.user_id = ${userId}
       GROUP BY b.id
       ORDER BY b.created_at DESC
     `);
@@ -80,19 +80,10 @@ export async function GET() {
       if (percentage >= 100) status = "danger";
       else if (percentage >= 80) status = "warning";
 
-      return {
-        ...b,
-        totalSpent,
-        remaining,
-        percentage,
-        status,
-      };
+      return { ...b, totalSpent, remaining, percentage, status };
     });
 
-    return NextResponse.json({
-      success: true,
-      data: formatted,
-    });
+    return NextResponse.json({ success: true, data: formatted });
   } catch (error) {
     console.error("Budget Fetch Error:", error);
     return NextResponse.json(

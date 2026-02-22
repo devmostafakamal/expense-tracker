@@ -3,6 +3,7 @@
 import React from "react";
 import { UserButton } from "@clerk/nextjs";
 import { FiSearch, FiBell, FiMenu } from "react-icons/fi";
+import NotificationBell from "./NotificationBell";
 
 type DashboardHeaderProps = {
   title?: string;
@@ -47,10 +48,11 @@ export default function DashboardHeader({
         </div>
 
         {/* Notification */}
-        <button className="relative p-2 rounded-full hover:bg-gray-100 transition">
+        {/* <button className="relative p-2 rounded-full hover:bg-gray-100 transition">
           <FiBell className="text-xl text-gray-700" />
           <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
+        </button> */}
+        <NotificationBell />
 
         {/* Clerk User */}
         <UserButton />
