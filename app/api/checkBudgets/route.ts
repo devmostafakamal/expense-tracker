@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import { budgets } from "@/utlis/schema";
 import { eq } from "drizzle-orm";
 import { db } from "@/utlis/dbConfig";
 
 export async function GET(req: NextRequest) {
   const userId = req.nextUrl.searchParams.get("userId");
-  // ✅ keep string
 
   if (!userId) {
     return NextResponse.json({ hasBudgets: false });

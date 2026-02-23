@@ -124,7 +124,7 @@ export default function ExpenseForm({
       </div>
 
       {/* Month & Year Row */}
-      <div className="flex space-x-4">
+      <div className="flex space-x-4 flex-col sm:flex-row">
         <div className="flex-1 flex flex-col">
           <label htmlFor="month" className="mb-1 text-gray-600 font-medium">
             Month

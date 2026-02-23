@@ -11,6 +11,9 @@ export const useCheckBudgets = () => {
     if (!user) return; // no user logged in
 
     // console.log("Clerk userId:", user.id); // ✅ now this will show
+    // console.log("Full user object:", user); // ← পুরো user দেখো
+    // console.log("user.id:", user.id);
+    // console.log("user.primaryEmailAddress:", user.primaryEmailAddress);
 
     const check = async () => {
       const res = await fetch(`/api/checkBudgets?userId=${user.id}`);
