@@ -1,6 +1,10 @@
 "use client";
 
+import { useCurrency } from "@/components/context/CurrencyContext";
+import { exportToPDF } from "@/utlis/exportPDF";
+import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
+import { FiDownload } from "react-icons/fi";
 import {
   BarChart,
   Bar,
@@ -67,6 +71,9 @@ export default function DashboardPage() {
     new Date().getFullYear(),
   );
   const [loading, setLoading] = useState(true);
+  const { user } = useUser();
+  const [expenses, setExpenses] = useState<any[]>([]);
+  const { convert, symbol, loading: currencyLoading } = useCurrency();
 
   const fetchBudgets = async () => {
     try {
@@ -79,9 +86,15 @@ export default function DashboardPage() {
       setLoading(false);
     }
   };
+  const fetchExpenses = async () => {
+    const res = await fetch("/api/expense");
+    const data = await res.json();
+    setExpenses(data);
+  };
 
   useEffect(() => {
     fetchBudgets();
+    fetchExpenses();
   }, []);
 
   // Filter
@@ -89,6 +102,11 @@ export default function DashboardPage() {
     const monthMatch = selectedMonth === "all" || b.month === selectedMonth;
     const yearMatch = b.year === selectedYear;
     return monthMatch && yearMatch;
+  });
+  // filtered expenses
+  const filteredExpenses = expenses.filter((e) => {
+    const monthMatch = selectedMonth === "all" || e.month === selectedMonth;
+    return monthMatch && e.year === selectedYear;
   });
 
   // Summary cards data
@@ -118,6 +136,16 @@ export default function DashboardPage() {
   const availableYears = [...new Set(budgets.map((b) => b.year))].sort(
     (a, b) => b - a,
   );
+
+  const handleExport = () => {
+    exportToPDF({
+      budgets: filtered,
+      expenses: filteredExpenses,
+      month: selectedMonth,
+      year: selectedYear,
+      userName: user?.fullName ?? user?.emailAddresses[0]?.emailAddress,
+    });
+  };
 
   if (loading) {
     return (
@@ -149,7 +177,6 @@ export default function DashboardPage() {
             </option>
           ))}
         </select>
-
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(Number(e.target.value))}
@@ -161,6 +188,14 @@ export default function DashboardPage() {
             </option>
           ))}
         </select>
+
+        <button
+          onClick={handleExport}
+          className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition ml-auto"
+        >
+          <FiDownload size={14} />
+          Export PDF
+        </button>
       </div>
 
       {/* Summary Cards */}
@@ -168,13 +203,19 @@ export default function DashboardPage() {
         <div className="bg-white rounded-xl p-4 shadow-sm border">
           <p className="text-xs text-gray-500 mb-1">Total Budget</p>
           <p className="text-xl font-bold text-blue-600">
-            ৳{totalBudget.toLocaleString()}
+            {symbol}
+            {convert(totalBudget).toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+            })}
           </p>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm border">
           <p className="text-xs text-gray-500 mb-1">Total Spent</p>
           <p className="text-xl font-bold text-red-500">
-            ৳{totalSpent.toLocaleString()}
+            {symbol}
+            {convert(totalBudget).toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+            })}
           </p>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm border">
@@ -182,7 +223,10 @@ export default function DashboardPage() {
           <p
             className={`text-xl font-bold ${totalRemaining < 0 ? "text-red-600" : "text-green-600"}`}
           >
-            ৳{totalRemaining.toLocaleString()}
+            {symbol}
+            {convert(totalBudget).toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+            })}
           </p>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm border">

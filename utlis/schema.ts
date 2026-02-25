@@ -20,3 +20,15 @@ export const expenses = pgTable("expenses", {
   year: integer("year").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export const savingsGoals = pgTable("savings_goals", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  title: text("title").notNull(),
+  targetAmount: integer("target_amount").notNull(),
+  savedAmount: integer("saved_amount").notNull().default(0),
+  currency: text("currency").notNull().default("BDT"),
+  deadline: text("deadline"),
+  category: text("category").default("General"),
+  createdAt: timestamp("created_at").defaultNow(),
+});

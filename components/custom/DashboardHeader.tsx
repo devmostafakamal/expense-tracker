@@ -4,6 +4,8 @@ import React from "react";
 import { UserButton } from "@clerk/nextjs";
 import { FiSearch, FiBell, FiMenu } from "react-icons/fi";
 import NotificationBell from "./NotificationBell";
+import { useCurrency } from "../context/CurrencyContext";
+import { CURRENCIES } from "@/utlis/currency";
 
 type DashboardHeaderProps = {
   title?: string;
@@ -14,6 +16,7 @@ export default function DashboardHeader({
   title = "Dashboard",
   toggleSidebar,
 }: DashboardHeaderProps) {
+  const { currency, setCurrency } = useCurrency();
   return (
     <div className="w-full flex justify-between items-center px-6 py-4 bg-white border-b shadow-sm">
       {/* Left Side: Hamburger + Title */}
@@ -30,8 +33,12 @@ export default function DashboardHeader({
 
         {/* Title */}
         <div>
-          <h2 className="text-xl font-bold text-gray-800">{title}</h2>
-          <p className="text-sm text-gray-500">Manage your expenses easily</p>
+          <h2 className="text-xl font-bold text-gray-800 hidden sm:flex">
+            {title}
+          </h2>
+          <p className="text-sm text-gray-500 hidden sm:flex">
+            Manage your expenses easily
+          </p>
         </div>
       </div>
 
@@ -46,6 +53,17 @@ export default function DashboardHeader({
             className="bg-transparent outline-none text-sm w-40"
           />
         </div>
+        <select
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value)}
+          className="text-sm border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        >
+          {CURRENCIES.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.symbol} {c.code}
+            </option>
+          ))}
+        </select>
 
         {/* Notification */}
         {/* <button className="relative p-2 rounded-full hover:bg-gray-100 transition">

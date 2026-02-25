@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { FaMoneyBillWave } from "react-icons/fa";
+import { FiTarget } from "react-icons/fi";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { MdDashboard } from "react-icons/md";
 import { RiVipCrownFill } from "react-icons/ri";
@@ -32,11 +33,18 @@ function DashboardSidebar({ onLinkClick }: DashboardSidebarProps) {
       path: "/dashboard/expense",
       icon: FaMoneyBillWave,
     },
+
     {
       id: 4,
       name: "Upgrade",
       path: "/dashboard/upgrade",
       icon: RiVipCrownFill,
+    },
+    {
+      id: 5,
+      name: "Savings",
+      path: "/dashboard/savings",
+      icon: FiTarget,
     },
   ];
 
@@ -74,10 +82,10 @@ function DashboardSidebar({ onLinkClick }: DashboardSidebarProps) {
       </div>
 
       {/* Optional profile button at bottom */}
-      <div className="mt-auto flex items-center gap-2">
+      {/* <div className="mt-auto flex items-center gap-2">
         <UserButton />
         <span className="hidden sm:inline">Profile</span>
-      </div>
+      </div> */}
     </div>
   );
 }
