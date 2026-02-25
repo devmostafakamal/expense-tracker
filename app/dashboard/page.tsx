@@ -133,9 +133,13 @@ export default function DashboardPage() {
     .filter(([, value]) => value > 0)
     .map(([name, value]) => ({ name, value }));
 
-  const availableYears = [...new Set(budgets.map((b) => b.year))].sort(
-    (a, b) => b - a,
-  );
+  // availableYears এ current year সবসময় থাকবে
+  const availableYears = [
+    ...new Set([
+      new Date().getFullYear(), // ← current year সবসময় add করো
+      ...budgets.map((b) => b.year),
+    ]),
+  ].sort((a, b) => b - a);
 
   const handleExport = () => {
     exportToPDF({
@@ -182,6 +186,7 @@ export default function DashboardPage() {
           onChange={(e) => setSelectedYear(Number(e.target.value))}
           className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
+          <option value="all">All years</option>
           {availableYears.map((y) => (
             <option key={y} value={y}>
               {y}
@@ -213,7 +218,7 @@ export default function DashboardPage() {
           <p className="text-xs text-gray-500 mb-1">Total Spent</p>
           <p className="text-xl font-bold text-red-500">
             {symbol}
-            {convert(totalBudget).toLocaleString(undefined, {
+            {convert(totalSpent).toLocaleString(undefined, {
               maximumFractionDigits: 2,
             })}
           </p>
@@ -224,7 +229,7 @@ export default function DashboardPage() {
             className={`text-xl font-bold ${totalRemaining < 0 ? "text-red-600" : "text-green-600"}`}
           >
             {symbol}
-            {convert(totalBudget).toLocaleString(undefined, {
+            {convert(totalRemaining).toLocaleString(undefined, {
               maximumFractionDigits: 2,
             })}
           </p>
