@@ -67,7 +67,7 @@ export default function DashboardPage() {
   const [selectedMonth, setSelectedMonth] = useState<number | "all">(
     new Date().getMonth() + 1,
   );
-  const [selectedYear, setSelectedYear] = useState<number>(
+  const [selectedYear, setSelectedYear] = useState<number | "all">(
     new Date().getFullYear(),
   );
   const [loading, setLoading] = useState(true);
@@ -100,13 +100,14 @@ export default function DashboardPage() {
   // Filter
   const filtered = budgets.filter((b) => {
     const monthMatch = selectedMonth === "all" || b.month === selectedMonth;
-    const yearMatch = b.year === selectedYear;
+    const yearMatch = selectedYear === "all" || b.year === selectedYear;
     return monthMatch && yearMatch;
   });
   // filtered expenses
   const filteredExpenses = expenses.filter((e) => {
     const monthMatch = selectedMonth === "all" || e.month === selectedMonth;
-    return monthMatch && e.year === selectedYear;
+    const yearMatch = selectedYear === "all" || e.year === selectedYear;
+    return monthMatch && yearMatch;
   });
 
   // Summary cards data
@@ -183,7 +184,11 @@ export default function DashboardPage() {
         </select>
         <select
           value={selectedYear}
-          onChange={(e) => setSelectedYear(Number(e.target.value))}
+          onChange={(e) =>
+            setSelectedYear(
+              e.target.value === "all" ? "all" : Number(e.target.value),
+            )
+          }
           className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
           <option value="all">All years</option>

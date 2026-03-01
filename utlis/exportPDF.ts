@@ -17,7 +17,7 @@ interface Expense {
   amount: number;
   category: string;
   month: number;
-  year: number;
+  year: number | "all";
 }
 
 const MONTHS = [
@@ -45,7 +45,7 @@ export function exportToPDF({
   budgets: Budget[];
   expenses: Expense[];
   month: number | "all";
-  year: number;
+  year: number | "all";
   userName?: string;
 }) {
   const doc = new jsPDF();

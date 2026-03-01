@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { FaMoneyBillWave } from "react-icons/fa";
-import { FiTarget } from "react-icons/fi";
+import { FiCreditCard, FiTarget } from "react-icons/fi";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { MdDashboard } from "react-icons/md";
 import { RiVipCrownFill } from "react-icons/ri";
@@ -45,6 +45,12 @@ function DashboardSidebar({ onLinkClick }: DashboardSidebarProps) {
       name: "Savings",
       path: "/dashboard/savings",
       icon: FiTarget,
+    },
+    {
+      id: 6,
+      name: "Accounts",
+      path: "/dashboard/accounts",
+      icon: FiCreditCard,
     },
   ];
 
