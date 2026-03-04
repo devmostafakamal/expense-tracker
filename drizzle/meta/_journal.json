@@ -43,6 +43,13 @@
       "when": 1772335214025,
       "tag": "0005_blushing_rumiko_fujikawa",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1772357946331,
+      "tag": "0006_thin_mandarin",
+      "breakpoints": true
     }
   ]
 }

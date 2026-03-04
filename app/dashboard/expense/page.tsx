@@ -7,6 +7,8 @@ interface Budget {
   id: number;
   title: string;
   amount: number;
+  month: number;
+  year: number;
 }
 
 function ExpensePage() {

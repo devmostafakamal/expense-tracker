@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  const { title, amount, month, year, budgetId } = body;
+  const { title, amount, month, year, budgetId, category } = body;
 
   if (!title || !amount || !month || !year || !budgetId) {
     return NextResponse.json(
@@ -22,7 +22,43 @@ export async function POST(req: Request) {
     );
   }
 
-  // ১. Expense save করো
+  // ১. Budget fetch করো
+  const budgetResult = await db
+    .select()
+    .from(budgets)
+    .where(and(eq(budgets.id, Number(budgetId)), eq(budgets.userId, userId)));
+
+  if (!budgetResult.length) {
+    return NextResponse.json({ message: "Budget not found" }, { status: 404 });
+  }
+
+  const budget = budgetResult[0];
+
+  // ২. এখন পর্যন্ত কত খরচ হয়েছে
+  const existingTotal = await db
+    .select({ total: sum(expenses.amount) })
+    .from(expenses)
+    .where(
+      and(
+        eq(expenses.userId, userId),
+        eq(expenses.budgetId, Number(budgetId)),
+        eq(expenses.month, Number(month)),
+        eq(expenses.year, Number(year)),
+      ),
+    );
+
+  const alreadySpent = Number(existingTotal[0]?.total ?? 0);
+  const remaining = budget.amount - alreadySpent;
+
+  // ৩. Validation: exceed করবে কিনা
+  if (Number(amount) > remaining) {
+    return NextResponse.json(
+      { message: `Budget exceeded! Remaining: ৳${remaining}` },
+      { status: 400 },
+    );
+  }
+
+  // ৪. Expense save করো
   await db.insert(expenses).values({
     userId,
     budgetId: Number(budgetId),
@@ -30,9 +66,10 @@ export async function POST(req: Request) {
     amount: Number(amount),
     month: Number(month),
     year: Number(year),
+    category: category || "Other",
   });
 
-  // ২. এই budget এর total spent বের করো
+  // ৫. Updated total spent বের করো
   const totalResult = await db
     .select({ total: sum(expenses.amount) })
     .from(expenses)
@@ -46,55 +83,40 @@ export async function POST(req: Request) {
     );
 
   const totalSpent = Number(totalResult[0]?.total ?? 0);
+  const budgetAmount = budget.amount;
+  const percentage = (totalSpent / budgetAmount) * 100;
 
-  // ৩. Budget details বের করো
-  const budgetResult = await db
-    .select()
-    .from(budgets)
-    .where(and(eq(budgets.id, Number(budgetId)), eq(budgets.userId, userId)));
-  console.log("POST hit!");
-  console.log("budgetId:", budgetId);
-  console.log("budgetResult length:", budgetResult.length);
-  if (budgetResult.length > 0) {
-    const budget = budgetResult[0];
-    const budgetAmount = budget.amount;
-    const percentage = (totalSpent / budgetAmount) * 100;
-    console.log("totalSpent:", totalSpent);
-    console.log("budgetAmount:", budgetAmount);
-    console.log("percentage:", percentage);
-    console.log("userId:", userId);
-    // ৪. Pusher দিয়ে notification পাঠাও
-    if (percentage >= 100) {
-      await pusherServer.trigger(`user-${userId}`, "budget-alert", {
-        type: "EXCEEDED",
-        budgetId: budget.id,
-        title: budget.title,
-        budgetAmount,
-        totalSpent,
-        percentage: Math.round(percentage),
-        message: `🚨 "${budget.title}" budget exceeded! Spent ৳${totalSpent} of ৳${budgetAmount}`,
-      });
-    } else if (percentage >= 80) {
-      await pusherServer.trigger(`user-${userId}`, "budget-alert", {
-        type: "WARNING",
-        budgetId: budget.id,
-        title: budget.title,
-        budgetAmount,
-        totalSpent,
-        percentage: Math.round(percentage),
-        message: `🔴 "${budget.title}" is at ${Math.round(percentage)}% of budget!`,
-      });
-    } else if (percentage >= 60) {
-      await pusherServer.trigger(`user-${userId}`, "budget-alert", {
-        type: "WARNING",
-        budgetId: budget.id,
-        title: budget.title,
-        budgetAmount,
-        totalSpent,
-        percentage: Math.round(percentage),
-        message: `🟡 "${budget.title}" is at ${Math.round(percentage)}% of budget!`,
-      });
-    }
+  // ৬. Pusher notification পাঠাও
+  if (percentage >= 100) {
+    await pusherServer.trigger(`user-${userId}`, "budget-alert", {
+      type: "EXCEEDED",
+      budgetId: budget.id,
+      title: budget.title,
+      budgetAmount,
+      totalSpent,
+      percentage: Math.round(percentage),
+      message: `🚨 "${budget.title}" budget exceeded! Spent ৳${totalSpent} of ৳${budgetAmount}`,
+    });
+  } else if (percentage >= 80) {
+    await pusherServer.trigger(`user-${userId}`, "budget-alert", {
+      type: "WARNING",
+      budgetId: budget.id,
+      title: budget.title,
+      budgetAmount,
+      totalSpent,
+      percentage: Math.round(percentage),
+      message: `🔴 "${budget.title}" is at ${Math.round(percentage)}% of budget!`,
+    });
+  } else if (percentage >= 60) {
+    await pusherServer.trigger(`user-${userId}`, "budget-alert", {
+      type: "ALERT_60",
+      budgetId: budget.id,
+      title: budget.title,
+      budgetAmount,
+      totalSpent,
+      percentage: Math.round(percentage),
+      message: `🟡 "${budget.title}" is at ${Math.round(percentage)}% of budget!`,
+    });
   }
 
   return NextResponse.json(

@@ -1,10 +1,23 @@
 "use client";
 import { useEffect, useState } from "react";
 
+const CATEGORIES = [
+  "Food",
+  "Rent",
+  "Travel",
+  "Shopping",
+  "Health",
+  "Education",
+  "Entertainment",
+  "Other",
+];
+
 interface Budget {
   id: number;
   title: string;
   amount: number;
+  month: number;
+  year: number;
 }
 
 export default function ExpenseForm({
@@ -19,18 +32,67 @@ export default function ExpenseForm({
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
   const [selectedBudgetId, setSelectedBudgetId] = useState<number | null>(null);
-
+  const [category, setCategory] = useState("Other");
+  const [customCategory, setCustomCategory] = useState("");
   const [loading, setLoading] = useState(false);
+  const [amountError, setAmountError] = useState("");
+
+  // Selected budget object
+  const selectedBudget =
+    budgets?.find((b) => b.id === selectedBudgetId) ?? null;
+
+  // Budget change হলে month/year auto-sync করো
+  const handleBudgetChange = (budgetId: number) => {
+    setSelectedBudgetId(budgetId);
+    setAmount(0);
+    setAmountError("");
+
+    const budget = budgets?.find((b) => b.id === budgetId);
+    if (budget) {
+      setMonth(budget.month);
+      setYear(budget.year);
+    }
+  };
+
+  // Amount change এ real-time validation
+  const handleAmountChange = (value: number) => {
+    setAmount(value);
+
+    if (selectedBudget && value > selectedBudget.amount) {
+      setAmountError(
+        `Amount cannot exceed budget limit of ৳${selectedBudget.amount}`,
+      );
+    } else if (value <= 0) {
+      setAmountError("Amount must be greater than 0");
+    } else {
+      setAmountError("");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedBudgetId) {
+    if (!selectedBudgetId || !selectedBudget) {
       alert("Please select a budget!");
       return;
     }
 
+    // Final validation before submit
+    if (amount <= 0) {
+      setAmountError("Amount must be greater than 0");
+      return;
+    }
+
+    if (amount > selectedBudget.amount) {
+      setAmountError(
+        `Amount cannot exceed budget limit of ৳${selectedBudget.amount}`,
+      );
+      return;
+    }
+
     setLoading(true);
+
+    const finalCategory = category === "Custom" ? customCategory : category;
 
     const res = await fetch("/api/expense", {
       method: "POST",
@@ -40,13 +102,17 @@ export default function ExpenseForm({
         amount,
         month,
         year,
-        budgetId: selectedBudgetId, // ✅ now it exists
+        budgetId: selectedBudgetId,
+        category: finalCategory,
       }),
     });
 
     if (res.ok) {
       setTitle("");
       setAmount(0);
+      setCategory("Other");
+      setCustomCategory("");
+      setAmountError("");
       onSuccess?.();
     } else {
       const data = await res.json();
@@ -55,11 +121,30 @@ export default function ExpenseForm({
 
     setLoading(false);
   };
+
   useEffect(() => {
     if (budgets && budgets.length > 0 && !selectedBudgetId) {
-      setSelectedBudgetId(budgets[0].id);
+      const firstBudget = budgets[0];
+      setSelectedBudgetId(firstBudget.id);
+      setMonth(firstBudget.month);
+      setYear(firstBudget.year);
     }
   }, [budgets]);
+
+  const MONTH_NAMES = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   return (
     <form
@@ -70,13 +155,10 @@ export default function ExpenseForm({
 
       {/* Budget Select */}
       <div className="flex flex-col">
-        <label htmlFor="budget" className="mb-1 text-gray-600 font-medium">
-          Select Budget
-        </label>
+        <label className="mb-1 text-gray-600 font-medium">Select Budget</label>
         <select
-          id="budget"
           value={selectedBudgetId ?? ""}
-          onChange={(e) => setSelectedBudgetId(Number(e.target.value))}
+          onChange={(e) => handleBudgetChange(Number(e.target.value))}
           required
           className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
         >
@@ -85,19 +167,74 @@ export default function ExpenseForm({
           </option>
           {budgets?.map((b) => (
             <option key={b.id} value={b.id}>
-              {b.title} (${b.amount})
+              {b.title} — ৳{b.amount} ({MONTH_NAMES[b.month - 1]} {b.year})
             </option>
           ))}
         </select>
       </div>
 
+      {/* Month & Year — read-only, auto-set from budget */}
+      {selectedBudget && (
+        <div className="flex space-x-4">
+          <div className="flex-1 flex flex-col">
+            <label className="mb-1 text-gray-600 font-medium">Month</label>
+            <input
+              type="text"
+              value={MONTH_NAMES[month - 1]}
+              readOnly
+              className="border border-gray-200 bg-gray-50 p-3 rounded-lg text-gray-500 cursor-not-allowed"
+            />
+          </div>
+          <div className="flex-1 flex flex-col">
+            <label className="mb-1 text-gray-600 font-medium">Year</label>
+            <input
+              type="text"
+              value={year}
+              readOnly
+              className="border border-gray-200 bg-gray-50 p-3 rounded-lg text-gray-500 cursor-not-allowed"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Category */}
+      <div className="flex flex-col">
+        <label className="mb-1 text-gray-600 font-medium">Category</label>
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+        >
+          {CATEGORIES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+          <option value="Custom">+ Custom</option>
+        </select>
+      </div>
+
+      {/* Custom Category */}
+      {category === "Custom" && (
+        <div className="flex flex-col">
+          <label className="mb-1 text-gray-600 font-medium">
+            Custom Category
+          </label>
+          <input
+            type="text"
+            value={customCategory}
+            onChange={(e) => setCustomCategory(e.target.value)}
+            placeholder="Enter category name"
+            required
+            className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          />
+        </div>
+      )}
+
       {/* Expense Title */}
       <div className="flex flex-col">
-        <label htmlFor="title" className="mb-1 text-gray-600 font-medium">
-          Expense Title
-        </label>
+        <label className="mb-1 text-gray-600 font-medium">Expense Title</label>
         <input
-          id="title"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -109,57 +246,38 @@ export default function ExpenseForm({
 
       {/* Amount */}
       <div className="flex flex-col">
-        <label htmlFor="amount" className="mb-1 text-gray-600 font-medium">
+        <label className="mb-1 text-gray-600 font-medium">
           Amount
+          {selectedBudget && (
+            <span className="ml-2 text-sm font-normal text-gray-400">
+              (Budget limit: ৳{selectedBudget.amount})
+            </span>
+          )}
         </label>
         <input
-          id="amount"
           type="number"
           value={amount}
-          onChange={(e) => setAmount(Number(e.target.value))}
+          onChange={(e) => handleAmountChange(Number(e.target.value))}
           placeholder="Enter amount"
           required
-          className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          min={1}
+          max={selectedBudget?.amount}
+          className={`border p-3 rounded-lg focus:ring-2 focus:outline-none ${
+            amountError
+              ? "border-red-400 focus:ring-red-300"
+              : "border-gray-300 focus:ring-blue-400"
+          }`}
         />
+        {amountError && (
+          <p className="mt-1 text-sm text-red-500">{amountError}</p>
+        )}
       </div>
 
-      {/* Month & Year Row */}
-      <div className="flex space-x-4 flex-col sm:flex-row">
-        <div className="flex-1 flex flex-col">
-          <label htmlFor="month" className="mb-1 text-gray-600 font-medium">
-            Month
-          </label>
-          <input
-            id="month"
-            type="number"
-            value={month}
-            onChange={(e) => setMonth(Number(e.target.value))}
-            min={1}
-            max={12}
-            required
-            className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-          />
-        </div>
-        <div className="flex-1 flex flex-col">
-          <label htmlFor="year" className="mb-1 text-gray-600 font-medium">
-            Year
-          </label>
-          <input
-            id="year"
-            type="number"
-            value={year}
-            onChange={(e) => setYear(Number(e.target.value))}
-            required
-            className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-          />
-        </div>
-      </div>
-
-      {/* Submit Button */}
+      {/* Submit */}
       <button
         type="submit"
-        disabled={loading}
-        className="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+        disabled={loading || !!amountError || amount <= 0}
+        className="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
         {loading ? "Saving..." : "Add Expense"}
       </button>

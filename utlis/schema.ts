@@ -2,9 +2,10 @@ import { serial, integer, text, timestamp, pgTable } from "drizzle-orm/pg-core";
 
 export const budgets = pgTable("budgets", {
   id: serial("id").primaryKey(),
-  userId: text("user_id").notNull(), // which user created budget
+  userId: text("user_id").notNull(),
   title: text("title").notNull(),
   amount: integer("amount").notNull(),
+  category: text("category").notNull().default("Other"), // ← যোগ করো
   month: integer("month").notNull(),
   year: integer("year").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
@@ -13,9 +14,10 @@ export const budgets = pgTable("budgets", {
 export const expenses = pgTable("expenses", {
   id: serial("id").primaryKey(),
   userId: text("user_id").notNull(),
-  budgetId: integer("budget_id").references(() => budgets.id), // 🔹 new
+  budgetId: integer("budget_id").references(() => budgets.id),
   title: text("title").notNull(),
   amount: integer("amount").notNull(),
+  category: text("category").notNull().default("Other"), // ← যোগ করো
   month: integer("month").notNull(),
   year: integer("year").notNull(),
   createdAt: timestamp("created_at").defaultNow(),

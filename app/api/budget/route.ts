@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { title, amount, month, year } = body;
+    const { title, amount, month, year, category } = body;
 
     if (
       typeof title !== "string" ||
@@ -32,7 +32,14 @@ export async function POST(req: NextRequest) {
 
     const insertedBudget = await db
       .insert(budgets)
-      .values({ userId, title, amount, month, year })
+      .values({
+        userId,
+        title,
+        amount,
+        month,
+        year,
+        category: category || "Other",
+      })
       .returning();
 
     return NextResponse.json({ success: true, data: insertedBudget[0] });
@@ -57,19 +64,23 @@ export async function GET() {
     }
 
     const result = await db.execute(sql`
-      SELECT 
-        b.id,
-        b.title,
-        b.amount,
-        b.month,
-        b.year,
-        COALESCE(SUM(e.amount), 0) as total_spent
-      FROM budgets b
-      LEFT JOIN expenses e ON b.id = e.budget_id
-      WHERE b.user_id = ${userId}
-      GROUP BY b.id
-      ORDER BY b.created_at DESC
-    `);
+  SELECT 
+    b.id,
+    b.title,
+    b.amount,
+    b.month,
+    b.category,
+    b.year,
+    COALESCE(SUM(e.amount), 0) as total_spent
+  FROM budgets b
+  LEFT JOIN expenses e 
+    ON b.id = e.budget_id
+    AND e.month = b.month
+    AND e.year = b.year
+  WHERE b.user_id = ${userId}
+  GROUP BY b.id
+  ORDER BY b.created_at DESC
+`);
 
     const formatted = result.rows.map((b: any) => {
       const totalSpent = Number(b.total_spent);
