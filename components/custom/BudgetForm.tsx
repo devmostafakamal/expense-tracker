@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useRef } from "react";
 
 const CATEGORIES = [
@@ -22,6 +23,7 @@ export default function BudgetForm({ onSuccess }: BudgetFormProps) {
   const [category, setCategory] = useState("");
   const [customCategory, setCustomCategory] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
+  const t = useTranslations("budget");
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.target.value = e.target.value.replace(/[^A-Za-z\s]/g, "");
@@ -69,7 +71,7 @@ export default function BudgetForm({ onSuccess }: BudgetFormProps) {
       {/* Title */}
       <input
         name="title"
-        placeholder="Budget Title"
+        placeholder={t("budgetTitle")}
         className="border border-gray-300 p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
         required
         onChange={handleTitleChange}
@@ -83,21 +85,21 @@ export default function BudgetForm({ onSuccess }: BudgetFormProps) {
         className="border border-gray-300 p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
       >
         <option value="" disabled>
-          Select Category
+          {t("category")}
         </option>
         {CATEGORIES.map((c) => (
           <option key={c} value={c}>
-            {c}
+            {t(`categories.${c}`)}
           </option>
         ))}
-        <option value="Custom">+ Custom</option>
+        <option value="Custom">{t("categories.Custom")}</option>
       </select>
 
       {/* Custom Category */}
       {category === "Custom" && (
         <input
           type="text"
-          placeholder="Enter custom category"
+          placeholder={t("category")}
           value={customCategory}
           onChange={(e) => setCustomCategory(e.target.value)}
           required
@@ -108,7 +110,7 @@ export default function BudgetForm({ onSuccess }: BudgetFormProps) {
       {/* Amount */}
       <input
         name="amount"
-        placeholder="Amount"
+        placeholder={t("amount")}
         type="number"
         className="border border-gray-300 p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
         required
@@ -118,7 +120,7 @@ export default function BudgetForm({ onSuccess }: BudgetFormProps) {
       <div className="flex gap-3">
         <input
           name="month"
-          placeholder="Month"
+          placeholder={t("month")}
           type="number"
           min={1}
           max={12}
@@ -127,7 +129,7 @@ export default function BudgetForm({ onSuccess }: BudgetFormProps) {
         />
         <input
           name="year"
-          placeholder="Year"
+          placeholder={t("year")}
           type="number"
           className="flex-1 border border-gray-300 p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
           required
@@ -139,7 +141,7 @@ export default function BudgetForm({ onSuccess }: BudgetFormProps) {
         disabled={loading}
         className="bg-indigo-600 text-white p-2.5 rounded-lg font-medium hover:bg-indigo-700 transition disabled:bg-gray-400"
       >
-        {loading ? "Adding..." : "Add Budget"}
+        {loading ? t("adding") : t("addBudget")}
       </button>
     </form>
   );

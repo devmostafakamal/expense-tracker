@@ -1,0 +1,97 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "budgets": "Budgets",
+    "expense": "Expense",
+    "savings": "Savings",
+    "accounts": "Accounts",
+    "upgrade": "Upgrade"
+  },
+  "dashboard": {
+    "title": "Analytics Dashboard",
+    "totalBudget": "Total Budget",
+    "totalSpent": "Total Spent",
+    "remaining": "Remaining",
+    "budgetStatus": "Budget Status",
+    "budgetVsSpent": "Budget vs Spent",
+    "categorySpending": "Category Wise Spending",
+    "noData": "No data for this period",
+    "noSpending": "No spending data yet",
+    "exportPDF": "Export PDF",
+    "allMonths": "All Months",
+    "allYears": "All Years",
+    "loading": "Loading analytics..."
+  },
+  "budget": {
+    "title": "Budgets",
+    "addBudget": "Add Budget",
+    "budgetTitle": "Budget Title",
+    "amount": "Amount",
+    "month": "Month",
+    "year": "Year",
+    "category": "Category",
+    "adding": "Adding...",
+    "categories": {
+      "Food": "Food",
+      "Rent": "Rent",
+      "Travel": "Travel",
+      "Shopping": "Shopping",
+      "Health": "Health",
+      "Education": "Education",
+      "Entertainment": "Entertainment",
+      "Other": "Other",
+      "Custom": "+ Custom"
+    }
+  },
+  "expense": {
+    "title": "Add Expense",
+    "selectBudget": "Select Budget",
+    "expenseTitle": "Expense Title",
+    "amount": "Amount",
+    "month": "Month",
+    "year": "Year",
+    "category": "Category",
+    "saving": "Saving...",
+    "addExpense": "Add Expense"
+  },
+  "savings": {
+    "title": "Savings Goals",
+    "newGoal": "New Goal",
+    "totalTarget": "Total Target",
+    "totalSaved": "Total Saved",
+    "completed": "Completed",
+    "addSavings": "Add Savings",
+    "noGoals": "No savings goals yet"
+  },
+  "accounts": {
+    "title": "Accounts",
+    "newAccount": "New Account",
+    "addIncome": "Add Income",
+    "transfer": "Transfer",
+    "totalBalance": "Total Balance",
+    "totalIncome": "Total Income"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "create": "Create",
+    "delete": "Delete",
+    "save": "Save",
+    "loading": "Loading..."
+  },
+  "budgetCard": {
+    "budget": "Budget",
+    "spent": "Spent",
+    "remaining": "Remaining",
+    "safe": "Safe",
+    "almostFull": "Almost Full",
+    "exceeded": "Budget Exceeded"
+  },
+
+  "expenseList": {
+    "title": "Expense List",
+    "loading": "Loading expenses...",
+    "empty": "No expenses added yet.",
+    "amount": "Amount",
+    "expenseId": "Expense ID"
+  }
+}

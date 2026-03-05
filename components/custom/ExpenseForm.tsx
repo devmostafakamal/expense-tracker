@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl"; // ← যোগ করো
 
 const CATEGORIES = [
   "Food",
@@ -27,6 +28,9 @@ export default function ExpenseForm({
   budgets: Budget[];
   onSuccess?: () => void;
 }) {
+  const t = useTranslations("expense"); // ← যোগ করো
+  const tb = useTranslations("budget"); // ← categories এর জন্য
+
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState(0);
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -37,16 +41,13 @@ export default function ExpenseForm({
   const [loading, setLoading] = useState(false);
   const [amountError, setAmountError] = useState("");
 
-  // Selected budget object
   const selectedBudget =
     budgets?.find((b) => b.id === selectedBudgetId) ?? null;
 
-  // Budget change হলে month/year auto-sync করো
   const handleBudgetChange = (budgetId: number) => {
     setSelectedBudgetId(budgetId);
     setAmount(0);
     setAmountError("");
-
     const budget = budgets?.find((b) => b.id === budgetId);
     if (budget) {
       setMonth(budget.month);
@@ -54,10 +55,8 @@ export default function ExpenseForm({
     }
   };
 
-  // Amount change এ real-time validation
   const handleAmountChange = (value: number) => {
     setAmount(value);
-
     if (selectedBudget && value > selectedBudget.amount) {
       setAmountError(
         `Amount cannot exceed budget limit of ৳${selectedBudget.amount}`,
@@ -71,29 +70,22 @@ export default function ExpenseForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!selectedBudgetId || !selectedBudget) {
-      alert("Please select a budget!");
+      alert(t("selectBudget"));
       return;
     }
-
-    // Final validation before submit
     if (amount <= 0) {
       setAmountError("Amount must be greater than 0");
       return;
     }
-
     if (amount > selectedBudget.amount) {
       setAmountError(
         `Amount cannot exceed budget limit of ৳${selectedBudget.amount}`,
       );
       return;
     }
-
     setLoading(true);
-
     const finalCategory = category === "Custom" ? customCategory : category;
-
     const res = await fetch("/api/expense", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -106,7 +98,6 @@ export default function ExpenseForm({
         category: finalCategory,
       }),
     });
-
     if (res.ok) {
       setTitle("");
       setAmount(0);
@@ -118,7 +109,6 @@ export default function ExpenseForm({
       const data = await res.json();
       alert(data.message || "Failed to add expense");
     }
-
     setLoading(false);
   };
 
@@ -151,11 +141,13 @@ export default function ExpenseForm({
       onSubmit={handleSubmit}
       className="bg-white p-6 rounded-xl shadow-md max-w-md mx-auto space-y-4"
     >
-      <h2 className="text-2xl font-semibold text-gray-800">Add Expense</h2>
+      <h2 className="text-2xl font-semibold text-gray-800">{t("title")}</h2>
 
       {/* Budget Select */}
       <div className="flex flex-col">
-        <label className="mb-1 text-gray-600 font-medium">Select Budget</label>
+        <label className="mb-1 text-gray-600 font-medium">
+          {t("selectBudget")}
+        </label>
         <select
           value={selectedBudgetId ?? ""}
           onChange={(e) => handleBudgetChange(Number(e.target.value))}
@@ -163,7 +155,7 @@ export default function ExpenseForm({
           className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
         >
           <option value="" disabled>
-            Select Budget
+            {t("selectBudget")}
           </option>
           {budgets?.map((b) => (
             <option key={b.id} value={b.id}>
@@ -173,11 +165,13 @@ export default function ExpenseForm({
         </select>
       </div>
 
-      {/* Month & Year — read-only, auto-set from budget */}
+      {/* Month & Year */}
       {selectedBudget && (
         <div className="flex space-x-4">
           <div className="flex-1 flex flex-col">
-            <label className="mb-1 text-gray-600 font-medium">Month</label>
+            <label className="mb-1 text-gray-600 font-medium">
+              {t("month")}
+            </label>
             <input
               type="text"
               value={MONTH_NAMES[month - 1]}
@@ -186,7 +180,9 @@ export default function ExpenseForm({
             />
           </div>
           <div className="flex-1 flex flex-col">
-            <label className="mb-1 text-gray-600 font-medium">Year</label>
+            <label className="mb-1 text-gray-600 font-medium">
+              {t("year")}
+            </label>
             <input
               type="text"
               value={year}
@@ -199,7 +195,9 @@ export default function ExpenseForm({
 
       {/* Category */}
       <div className="flex flex-col">
-        <label className="mb-1 text-gray-600 font-medium">Category</label>
+        <label className="mb-1 text-gray-600 font-medium">
+          {t("category")}
+        </label>
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -207,10 +205,10 @@ export default function ExpenseForm({
         >
           {CATEGORIES.map((c) => (
             <option key={c} value={c}>
-              {c}
+              {tb(`categories.${c}`)}
             </option>
           ))}
-          <option value="Custom">+ Custom</option>
+          <option value="Custom">{tb("categories.Custom")}</option>
         </select>
       </div>
 
@@ -218,13 +216,13 @@ export default function ExpenseForm({
       {category === "Custom" && (
         <div className="flex flex-col">
           <label className="mb-1 text-gray-600 font-medium">
-            Custom Category
+            {t("category")}
           </label>
           <input
             type="text"
             value={customCategory}
             onChange={(e) => setCustomCategory(e.target.value)}
-            placeholder="Enter category name"
+            placeholder={t("category")}
             required
             className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
@@ -233,12 +231,14 @@ export default function ExpenseForm({
 
       {/* Expense Title */}
       <div className="flex flex-col">
-        <label className="mb-1 text-gray-600 font-medium">Expense Title</label>
+        <label className="mb-1 text-gray-600 font-medium">
+          {t("expenseTitle")}
+        </label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter expense name"
+          placeholder={t("expenseTitle")}
           required
           className="border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
         />
@@ -247,7 +247,7 @@ export default function ExpenseForm({
       {/* Amount */}
       <div className="flex flex-col">
         <label className="mb-1 text-gray-600 font-medium">
-          Amount
+          {t("amount")}
           {selectedBudget && (
             <span className="ml-2 text-sm font-normal text-gray-400">
               (Budget limit: ৳{selectedBudget.amount})
@@ -258,7 +258,7 @@ export default function ExpenseForm({
           type="number"
           value={amount}
           onChange={(e) => handleAmountChange(Number(e.target.value))}
-          placeholder="Enter amount"
+          placeholder={t("amount")}
           required
           min={1}
           max={selectedBudget?.amount}
@@ -279,7 +279,7 @@ export default function ExpenseForm({
         disabled={loading || !!amountError || amount <= 0}
         className="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
-        {loading ? "Saving..." : "Add Expense"}
+        {loading ? t("saving") : t("addExpense")}
       </button>
     </form>
   );

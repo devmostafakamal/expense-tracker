@@ -1,0 +1,97 @@
+{
+  "nav": {
+    "dashboard": "ড্যাশবোর্ড",
+    "budgets": "বাজেট",
+    "expense": "খরচ",
+    "savings": "সঞ্চয়",
+    "accounts": "অ্যাকাউন্ট",
+    "upgrade": "আপগ্রেড"
+  },
+  "dashboard": {
+    "title": "বিশ্লেষণ ড্যাশবোর্ড",
+    "totalBudget": "মোট বাজেট",
+    "totalSpent": "মোট খরচ",
+    "remaining": "অবশিষ্ট",
+    "budgetStatus": "বাজেট অবস্থা",
+    "budgetVsSpent": "বাজেট বনাম খরচ",
+    "categorySpending": "ক্যাটাগরি অনুযায়ী খরচ",
+    "noData": "এই সময়ের কোনো তথ্য নেই",
+    "noSpending": "এখনো কোনো খরচ নেই",
+    "exportPDF": "PDF ডাউনলোড",
+    "allMonths": "সব মাস",
+    "allYears": "সব বছর",
+    "loading": "লোড হচ্ছে..."
+  },
+  "budget": {
+    "title": "বাজেট",
+    "addBudget": "বাজেট যোগ করুন",
+    "budgetTitle": "বাজেটের নাম",
+    "amount": "পরিমাণ",
+    "month": "মাস",
+    "year": "বছর",
+    "category": "ক্যাটাগরি",
+    "adding": "যোগ হচ্ছে...",
+    "categories": {
+      "Food": "খাবার",
+      "Rent": "বাড়িভাড়া",
+      "Travel": "ভ্রমণ",
+      "Shopping": "কেনাকাটা",
+      "Health": "স্বাস্থ্য",
+      "Education": "শিক্ষা",
+      "Entertainment": "বিনোদন",
+      "Other": "অন্যান্য",
+      "Custom": "+ কাস্টম"
+    }
+  },
+  "expense": {
+    "title": "খরচ যোগ করুন",
+    "selectBudget": "বাজেট নির্বাচন করুন",
+    "expenseTitle": "খরচের নাম",
+    "amount": "পরিমাণ",
+    "month": "মাস",
+    "year": "বছর",
+    "category": "ক্যাটাগরি",
+    "saving": "সংরক্ষণ হচ্ছে...",
+    "addExpense": "খরচ যোগ করুন"
+  },
+  "savings": {
+    "title": "সঞ্চয় লক্ষ্য",
+    "newGoal": "নতুন লক্ষ্য",
+    "totalTarget": "মোট লক্ষ্য",
+    "totalSaved": "মোট সঞ্চয়",
+    "completed": "সম্পন্ন",
+    "addSavings": "সঞ্চয় যোগ করুন",
+    "noGoals": "এখনো কোনো লক্ষ্য নেই"
+  },
+  "accounts": {
+    "title": "অ্যাকাউন্ট",
+    "newAccount": "নতুন অ্যাকাউন্ট",
+    "addIncome": "আয় যোগ করুন",
+    "transfer": "স্থানান্তর",
+    "totalBalance": "মোট ব্যালেন্স",
+    "totalIncome": "মোট আয়"
+  },
+  "common": {
+    "cancel": "বাতিল",
+    "create": "তৈরি করুন",
+    "delete": "মুছুন",
+    "save": "সংরক্ষণ",
+    "loading": "লোড হচ্ছে..."
+  },
+  "budgetCard": {
+    "budget": "বাজেট",
+    "spent": "খরচ",
+    "remaining": "অবশিষ্ট",
+    "safe": "নিরাপদ",
+    "almostFull": "প্রায় শেষ",
+    "exceeded": "বাজেট শেষ"
+  },
+
+  "expenseList": {
+    "title": "খরচের তালিকা",
+    "loading": "খরচ লোড হচ্ছে...",
+    "empty": "এখনও কোন খরচ যোগ করা হয়নি",
+    "amount": "পরিমাণ",
+    "expenseId": "খরচ আইডি"
+  }
+}

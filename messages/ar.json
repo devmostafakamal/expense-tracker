@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "budgets": "الميزانيات",
+    "expense": "المصروفات",
+    "savings": "المدخرات",
+    "accounts": "الحسابات",
+    "upgrade": "ترقية"
+  },
+  "dashboard": {
+    "title": "لوحة التحليلات",
+    "totalBudget": "إجمالي الميزانية",
+    "totalSpent": "إجمالي الإنفاق",
+    "remaining": "المتبقي",
+    "budgetStatus": "حالة الميزانية",
+    "budgetVsSpent": "الميزانية مقابل الإنفاق",
+    "categorySpending": "الإنفاق حسب الفئة",
+    "noData": "لا توجد بيانات لهذه الفترة",
+    "noSpending": "لا توجد بيانات إنفاق بعد",
+    "exportPDF": "تصدير PDF",
+    "allMonths": "كل الأشهر",
+    "allYears": "كل السنوات",
+    "loading": "جاري التحميل..."
+  },
+  "budget": {
+    "title": "الميزانيات",
+    "addBudget": "إضافة ميزانية",
+    "budgetTitle": "عنوان الميزانية",
+    "amount": "المبلغ",
+    "month": "الشهر",
+    "year": "السنة",
+    "category": "الفئة",
+    "adding": "جاري الإضافة...",
+    "categories": {
+      "Food": "طعام",
+      "Rent": "إيجار",
+      "Travel": "سفر",
+      "Shopping": "تسوق",
+      "Health": "صحة",
+      "Education": "تعليم",
+      "Entertainment": "ترفيه",
+      "Other": "أخرى",
+      "Custom": "+ مخصص"
+    }
+  },
+  "expense": {
+    "title": "إضافة مصروف",
+    "selectBudget": "اختر الميزانية",
+    "expenseTitle": "عنوان المصروف",
+    "amount": "المبلغ",
+    "month": "الشهر",
+    "year": "السنة",
+    "category": "الفئة",
+    "saving": "جاري الحفظ...",
+    "addExpense": "إضافة مصروف"
+  },
+  "savings": {
+    "title": "أهداف الادخار",
+    "newGoal": "هدف جديد",
+    "totalTarget": "إجمالي الهدف",
+    "totalSaved": "إجمالي المدخرات",
+    "completed": "مكتمل",
+    "addSavings": "إضافة مدخرات",
+    "noGoals": "لا توجد أهداف بعد"
+  },
+  "accounts": {
+    "title": "الحسابات",
+    "newAccount": "حساب جديد",
+    "addIncome": "إضافة دخل",
+    "transfer": "تحويل",
+    "totalBalance": "إجمالي الرصيد",
+    "totalIncome": "إجمالي الدخل"
+  },
+  "common": {
+    "cancel": "إلغاء",
+    "create": "إنشاء",
+    "delete": "حذف",
+    "save": "حفظ",
+    "loading": "جاري التحميل..."
+  },
+  "budgetCard": {
+    "budget": "الميزانية",
+    "spent": "المنفق",
+    "remaining": "المتبقي",
+    "safe": "آمن",
+    "almostFull": "على وشك الامتلاء",
+    "exceeded": "تجاوز الميزانية"
+  }
+}

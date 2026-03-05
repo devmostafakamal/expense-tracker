@@ -10,6 +10,7 @@ import { FiCreditCard, FiTarget } from "react-icons/fi";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { MdDashboard } from "react-icons/md";
 import { RiVipCrownFill } from "react-icons/ri";
+import { useTranslations } from "next-intl"; // ← যোগ করো
 
 type MenuItem = {
   id: number;
@@ -19,36 +20,37 @@ type MenuItem = {
 };
 
 type DashboardSidebarProps = {
-  onLinkClick?: () => void; // ✅ optional callback for mobile
+  onLinkClick?: () => void;
 };
 
 function DashboardSidebar({ onLinkClick }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const t = useTranslations("nav"); // ← যোগ করো
+
   const menuList: MenuItem[] = [
-    { id: 1, name: "Dashboard", path: "/dashboard", icon: MdDashboard },
-    { id: 2, name: "Budgets", path: "/dashboard/budgets", icon: GiTakeMyMoney },
+    { id: 1, name: t("dashboard"), path: "/dashboard", icon: MdDashboard },
+    {
+      id: 2,
+      name: t("budgets"),
+      path: "/dashboard/budgets",
+      icon: GiTakeMyMoney,
+    },
     {
       id: 3,
-      name: "Expense",
+      name: t("expense"),
       path: "/dashboard/expense",
       icon: FaMoneyBillWave,
     },
-
     {
       id: 4,
-      name: "Upgrade",
+      name: t("upgrade"),
       path: "/dashboard/upgrade",
       icon: RiVipCrownFill,
     },
-    {
-      id: 5,
-      name: "Savings",
-      path: "/dashboard/savings",
-      icon: FiTarget,
-    },
+    { id: 5, name: t("savings"), path: "/dashboard/savings", icon: FiTarget },
     {
       id: 6,
-      name: "Accounts",
+      name: t("accounts"),
       path: "/dashboard/accounts",
       icon: FiCreditCard,
     },
@@ -59,7 +61,7 @@ function DashboardSidebar({ onLinkClick }: DashboardSidebarProps) {
       {/* Logo */}
       <div className="flex items-center gap-2">
         <Image src={"/expense.png"} width={50} height={30} alt="logo" />
-        <h2 className="font-semibold text-lg">Expense</h2>
+        <h2 className="font-semibold text-lg">Spendly</h2>
       </div>
 
       {/* Menu */}
@@ -73,7 +75,7 @@ function DashboardSidebar({ onLinkClick }: DashboardSidebarProps) {
               <li key={menu.id}>
                 <Link
                   href={menu.path}
-                  onClick={onLinkClick} // ✅ closes sidebar on mobile
+                  onClick={onLinkClick}
                   className={`flex items-center gap-3 p-2 rounded-md font-medium hover:bg-gray-100 transition ${
                     isActive ? "bg-gray-200" : ""
                   }`}
@@ -86,12 +88,6 @@ function DashboardSidebar({ onLinkClick }: DashboardSidebarProps) {
           })}
         </ul>
       </div>
-
-      {/* Optional profile button at bottom */}
-      {/* <div className="mt-auto flex items-center gap-2">
-        <UserButton />
-        <span className="hidden sm:inline">Profile</span>
-      </div> */}
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useCurrency } from "@/components/context/CurrencyContext";
 import { exportToPDF } from "@/utlis/exportPDF";
 import { useUser } from "@clerk/nextjs";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { FiDownload } from "react-icons/fi";
 import {
@@ -74,7 +75,7 @@ export default function DashboardPage() {
   const { user } = useUser();
   const [expenses, setExpenses] = useState<any[]>([]);
   const { convert, symbol, loading: currencyLoading } = useCurrency();
-
+  const t = useTranslations("dashboard");
   const fetchBudgets = async () => {
     try {
       const res = await fetch("/api/budget");
@@ -162,7 +163,7 @@ export default function DashboardPage() {
 
   return (
     <div className="p-4 sm:p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800">Analytics Dashboard</h1>
+      <h1 className="text-2xl font-bold text-gray-800">{t("title")}</h1>
 
       {/* Filter Bar */}
       <div className="flex gap-3 flex-wrap">
@@ -175,7 +176,7 @@ export default function DashboardPage() {
           }
           className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
-          <option value="all">All Months</option>
+          <option value="all">{t("allMonths")}</option>
           {MONTHS.map((m, i) => (
             <option key={i + 1} value={i + 1}>
               {m}
@@ -191,7 +192,7 @@ export default function DashboardPage() {
           }
           className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
-          <option value="all">All years</option>
+          <option value="all">{t("allYears")}</option>
           {availableYears.map((y) => (
             <option key={y} value={y}>
               {y}
@@ -204,14 +205,14 @@ export default function DashboardPage() {
           className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition ml-auto"
         >
           <FiDownload size={14} />
-          Export PDF
+          {t("exportPDF")}
         </button>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl p-4 shadow-sm border">
-          <p className="text-xs text-gray-500 mb-1">Total Budget</p>
+          <p className="text-xs text-gray-500 mb-1">{t("totalBudget")}</p>
           <p className="text-xl font-bold text-blue-600">
             {symbol}
             {convert(totalBudget).toLocaleString(undefined, {
@@ -220,7 +221,7 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm border">
-          <p className="text-xs text-gray-500 mb-1">Total Spent</p>
+          <p className="text-xs text-gray-500 mb-1">{t("totalSpent")}</p>
           <p className="text-xl font-bold text-red-500">
             {symbol}
             {convert(totalSpent).toLocaleString(undefined, {
@@ -229,7 +230,7 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm border">
-          <p className="text-xs text-gray-500 mb-1">Remaining</p>
+          <p className="text-xs text-gray-500 mb-1">{t("remaining")}</p>
           <p
             className={`text-xl font-bold ${totalRemaining < 0 ? "text-red-600" : "text-green-600"}`}
           >
@@ -240,7 +241,7 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm border">
-          <p className="text-xs text-gray-500 mb-1">Budget Status</p>
+          <p className="text-xs text-gray-500 mb-1">{t("budgetStatus")}</p>
           <div className="flex gap-2 mt-1">
             <span className="text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded-full">
               ✔ {safeCount}
@@ -260,7 +261,7 @@ export default function DashboardPage() {
         {/* Bar Chart */}
         <div className="bg-white rounded-xl p-4 shadow-sm border">
           <h2 className="text-sm font-semibold text-gray-700 mb-4">
-            Budget vs Spent
+            {t("budgetVsSpent")}
           </h2>
           {barData.length > 0 ? (
             <ResponsiveContainer width="100%" height={250}>
@@ -281,7 +282,7 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           ) : (
             <div className="h-48 flex items-center justify-center text-gray-400 text-sm">
-              No data for this period
+              {t("noData")}
             </div>
           )}
         </div>
@@ -289,7 +290,7 @@ export default function DashboardPage() {
         {/* Pie Chart */}
         <div className="bg-white rounded-xl p-4 shadow-sm border">
           <h2 className="text-sm font-semibold text-gray-700 mb-4">
-            Category Wise Spending
+            {t("categorySpending")}
           </h2>
           {pieData.length > 0 ? (
             <ResponsiveContainer width="100%" height={250}>
@@ -317,7 +318,7 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           ) : (
             <div className="h-48 flex items-center justify-center text-gray-400 text-sm">
-              No spending data yet
+              {t("noSpending")}
             </div>
           )}
         </div>
